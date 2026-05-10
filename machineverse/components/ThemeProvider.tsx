@@ -14,9 +14,5 @@ export default function ThemeProvider() {
     else root.classList.remove("dark");
   }, [darkMode, hydrated]);
 
-  useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
-
   return null;
 }

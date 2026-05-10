@@ -57,21 +57,22 @@ const CATEGORY_QUESTIONS: Record<Category, string[]> = {
   ],
 };
 
-export default function Sidebar({
-  onTopicClick,
-  onOpenTimeline,
-  onOpenCompare,
-}: {
+interface SidebarInnerProps {
+  questions: string[];
   onTopicClick: (q: string) => void;
   onOpenTimeline: () => void;
   onOpenCompare: () => void;
-}) {
-  const activeCategory = useStore((s) => s.activeCategory);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  closeAfter?: () => void;
+}
 
-  const questions = CATEGORY_QUESTIONS[activeCategory] ?? CATEGORY_QUESTIONS.all;
-
-  const Inner = ({ closeAfter }: { closeAfter?: () => void }) => (
+function SidebarInner({
+  questions,
+  onTopicClick,
+  onOpenTimeline,
+  onOpenCompare,
+  closeAfter,
+}: SidebarInnerProps) {
+  return (
     <div className="flex flex-col h-full bg-surface">
       <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-7">
         <section>
@@ -155,11 +156,31 @@ export default function Sidebar({
       </div>
     </div>
   );
+}
+
+export default function Sidebar({
+  onTopicClick,
+  onOpenTimeline,
+  onOpenCompare,
+}: {
+  onTopicClick: (q: string) => void;
+  onOpenTimeline: () => void;
+  onOpenCompare: () => void;
+}) {
+  const activeCategory = useStore((s) => s.activeCategory);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const questions = CATEGORY_QUESTIONS[activeCategory] ?? CATEGORY_QUESTIONS.all;
 
   return (
     <>
       <aside className="hidden md:flex flex-col w-[230px] lg:w-[270px] flex-shrink-0 border-r border-border h-full">
-        <Inner />
+        <SidebarInner
+          questions={questions}
+          onTopicClick={onTopicClick}
+          onOpenTimeline={onOpenTimeline}
+          onOpenCompare={onOpenCompare}
+        />
       </aside>
 
       <button
@@ -203,7 +224,13 @@ export default function Sidebar({
                 </button>
               </div>
               <div className="flex-1 overflow-hidden">
-                <Inner closeAfter={() => setMobileOpen(false)} />
+                <SidebarInner
+                  questions={questions}
+                  onTopicClick={onTopicClick}
+                  onOpenTimeline={onOpenTimeline}
+                  onOpenCompare={onOpenCompare}
+                  closeAfter={() => setMobileOpen(false)}
+                />
               </div>
             </motion.div>
           </>

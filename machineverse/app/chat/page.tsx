@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import Sidebar from "@/components/Sidebar";
 import ChatInterface from "@/components/ChatInterface";
@@ -10,6 +11,34 @@ import SurpriseButton from "@/components/SurpriseButton";
 import Timeline from "@/components/Timeline";
 import ComparisonModal from "@/components/ComparisonModal";
 import { useStore } from "@/store/useStore";
+import { CATEGORY_LIST, type Category } from "@/lib/types";
+
+function CategoryQuerySync() {
+  const params = useSearchParams();
+  const setCategory = useStore((s) => s.setCategory);
+  const clearChat = useStore((s) => s.clearChat);
+  const hydrated = useStore((s) => s.hydrated);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const raw = params.get("cat");
+    if (!raw) return;
+    if (!CATEGORY_LIST.includes(raw as Category)) return;
+    const current = useStore.getState().activeCategory;
+    if (current !== raw) {
+      clearChat();
+      setCategory(raw as Category);
+    }
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("mv_visited", "1");
+      const url = new URL(window.location.href);
+      url.searchParams.delete("cat");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [params, hydrated, setCategory, clearChat]);
+
+  return null;
+}
 
 export default function ChatPage() {
   const [bookmarksOpen, setBookmarksOpen] = useState(false);
@@ -22,6 +51,9 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background">
+      <Suspense fallback={null}>
+        <CategoryQuerySync />
+      </Suspense>
       <Navigation onOpenBookmarks={() => setBookmarksOpen(true)} />
       <FactsTicker onFactClick={(fact) => askInChat(`Tell me more about: ${fact}`)} />
 

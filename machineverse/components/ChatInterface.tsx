@@ -149,6 +149,10 @@ export default function ChatInterface() {
 
   const greetingShownRef = useRef(false);
   useEffect(() => {
+    greetingShownRef.current = false;
+  }, [activeCategory]);
+
+  useEffect(() => {
     if (!hydrated) return;
     if (chatHistory.length > 0) {
       greetingShownRef.current = true;

@@ -27,10 +27,10 @@ export default function Timeline({
   useEffect(() => {
     if (!isOpen) return;
     let abort = false;
-    setMilestones([]);
-    setError(null);
-    setLoading(true);
     (async () => {
+      setMilestones([]);
+      setError(null);
+      setLoading(true);
       try {
         const res = await fetch("/api/timeline", {
           method: "POST",
