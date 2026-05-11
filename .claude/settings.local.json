@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch *)",
+      "PowerShell(Get-NetTCPConnection *)",
+      "PowerShell(npm run *)",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri http://localhost:3000 -UseBasicParsing -TimeoutSec 30; \"Status: $\\($r.StatusCode\\)  Length: $\\($r.RawContentLength\\)\" } catch { \"ERROR: $\\($_.Exception.Message\\)\" })"
+    ]
+  }
+}
