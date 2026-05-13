@@ -5,6 +5,7 @@ import type { Category, FactsApiResponse } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
@@ -12,6 +13,7 @@ export async function POST(req: Request) {
     const { text } = await generate({
       prompt: factsPrompt(category ?? "all"),
       responseMimeType: "application/json",
+      useWebSearch: true,
     });
     const parsed = safeJsonParse<{ facts: string[] }>(text);
     const facts = (parsed?.facts ?? []).filter((f) => typeof f === "string");

@@ -6,6 +6,7 @@ import type { CompareApiResponse, VehicleSpec } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 interface RawCompare {
   vehicleA: VehicleSpec;
@@ -26,6 +27,7 @@ export async function POST(req: Request) {
     const { text } = await generate({
       prompt: comparePrompt(a, b),
       responseMimeType: "application/json",
+      useWebSearch: true,
     });
 
     const data = safeJsonParse<RawCompare>(text);

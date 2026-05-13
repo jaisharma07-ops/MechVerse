@@ -6,6 +6,9 @@ import { fetchManyWikimediaImages } from "@/lib/wikimedia";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+// Vercel: Gemini grounding + multi-provider fallback can take 10-30s.
+// 60s is the cap on Pro; Hobby caps at 10s — upgrade or accept truncation.
+export const maxDuration = 60;
 
 const SUGGESTIONS_RE = /<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i;
 

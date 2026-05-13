@@ -5,6 +5,7 @@ import type { Category, TimelineApiResponse, TimelineMilestone } from "@/lib/typ
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
@@ -12,6 +13,7 @@ export async function POST(req: Request) {
     const { text } = await generate({
       prompt: timelinePrompt(category ?? "all"),
       responseMimeType: "application/json",
+      useWebSearch: true,
     });
     const parsed = safeJsonParse<{ milestones: TimelineMilestone[] }>(text);
     if (!parsed?.milestones || !Array.isArray(parsed.milestones)) {

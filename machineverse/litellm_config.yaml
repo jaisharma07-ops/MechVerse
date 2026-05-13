@@ -1,0 +1,69 @@
+# LLM Gateway Configuration
+# ─────────────────────────
+# This file documents the multi-provider fallback chain. The actual gateway
+# is implemented in TypeScript at lib/llm/ (no Python LiteLLM proxy is
+# required; see the implementation note in README.md → "LLM Providers").
+#
+# If you ever swap in the real LiteLLM proxy (`pip install litellm[proxy]`
+# then `litellm --config litellm_config.yaml`), this file is shaped to work
+# as-is. Until then, lib/llm/config.ts is the source of truth.
+
+model_list:
+  # 1. Gemini — primary. Round-robin across GEMINI_API_KEY_1..5.
+  - model_name: primary
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key:
+        - os.environ/GEMINI_API_KEY_1
+        - os.environ/GEMINI_API_KEY_2
+        - os.environ/GEMINI_API_KEY_3
+        - os.environ/GEMINI_API_KEY_4
+        - os.environ/GEMINI_API_KEY_5
+
+  # 2. Groq — very fast, generous free tier.
+  - model_name: fallback_1
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: os.environ/GROQ_API_KEY
+
+  # 3. OpenRouter — free DeepSeek tier.
+  - model_name: fallback_2
+    litellm_params:
+      model: openrouter/deepseek/deepseek-chat-v3.1:free
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  # 4. Cerebras — fast inference, free tier.
+  - model_name: fallback_3
+    litellm_params:
+      model: cerebras/llama-4-scout-17b-16e-instruct
+      api_key: os.environ/CEREBRAS_API_KEY
+
+  # 5. GitHub Models — free for OSS, GPT-4o-mini family.
+  - model_name: fallback_4
+    litellm_params:
+      model: github/gpt-4o-mini
+      api_key: os.environ/GITHUB_TOKEN
+
+  # 6. Ollama — local safety net. Always reachable if the daemon is up.
+  - model_name: fallback_5
+    litellm_params:
+      model: ollama/llama3.2:3b
+      api_base: http://localhost:11434
+
+router_settings:
+  num_retries: 2
+  request_timeout: 30
+  fallbacks:
+    - primary: [fallback_1, fallback_2, fallback_3, fallback_4, fallback_5]
+    - fallback_1: [fallback_2, fallback_3, fallback_4, fallback_5]
+    - fallback_2: [fallback_3, fallback_4, fallback_5]
+    - fallback_3: [fallback_4, fallback_5]
+    - fallback_4: [fallback_5]
+
+litellm_settings:
+  cache: true
+  cache_params:
+    type: local       # in-memory; no Redis required for v1
+    ttl: 1800         # 30 min
+  set_verbose: false
+  json_logs: true

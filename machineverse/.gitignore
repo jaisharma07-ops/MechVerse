@@ -32,6 +32,13 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# raw video backups — keep originals locally, never commit
+/public/videos/_raw/
+
+# dev-only log file
+/dev.log
 
 # vercel
 .vercel
