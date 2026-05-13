@@ -375,8 +375,8 @@ export default function ChatInterface() {
 
   return (
     <div className="flex flex-col h-full bg-background relative">
-      <div className="flex-1 overflow-y-auto px-3 md:px-6 pt-4">
-        <div className="max-w-3xl mx-auto flex flex-col gap-1 pb-36">
+      <div className="flex-1 overflow-y-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-4">
+        <div className="mx-auto flex flex-col gap-1 pb-36 w-full max-w-3xl xl:max-w-4xl 2xl:max-w-[1100px]">
           {chatHistory.map((msg) => (
             <MessageBubble
               key={msg.id}
@@ -417,8 +417,8 @@ export default function ChatInterface() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 px-3 md:px-6 pb-4 pt-6 bg-gradient-to-t from-background via-background/95 to-transparent pointer-events-none">
-        <div className="max-w-3xl mx-auto pointer-events-auto">
+      <div className="absolute bottom-0 left-0 right-0 px-3 sm:px-4 md:px-6 lg:px-8 pb-[max(env(safe-area-inset-bottom),1rem)] pt-6 bg-gradient-to-t from-background via-background/95 to-transparent pointer-events-none">
+        <div className="mx-auto pointer-events-auto w-full max-w-3xl xl:max-w-4xl 2xl:max-w-[1100px]">
           <AnimatePresence>
             {attachments.length > 0 && (
               <motion.div
@@ -488,7 +488,7 @@ export default function ChatInterface() {
                   ? `Ask about ${attachments.length === 1 ? "this image" : "these images"}…`
                   : `Ask anything about ${CATEGORY_LABELS[activeCategory].label.toLowerCase()}...`
               }
-              className="flex-1 bg-transparent border-none text-text-primary px-2 py-2 outline-none text-sm min-w-0"
+              className="flex-1 bg-transparent border-none text-text-primary px-2 py-2 outline-none text-base sm:text-sm min-w-0"
               disabled={loading}
             />
 

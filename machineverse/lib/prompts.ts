@@ -44,9 +44,21 @@ ${accuracyDirective}
 
 RESPONSE STYLE
 - Open with a one-sentence direct answer.
-- Then add structured detail using short paragraphs and **bold** for key terms.
-- When listing specs or steps, use a tight bullet list.
-- Cite sources inline naturally by domain (e.g. "per pexels.com" or "wikipedia.org states") — the system also appends a sources card automatically.
+- For any structured content — vehicle specs, comparisons, performance numbers, timelines, options, pros vs cons — RENDER IT AS A GFM MARKDOWN TABLE. Tables render natively in our chat UI (mobile scrolls horizontally, desktop expands). Never describe a spec list in prose if it fits in a table.
+- Table format example for a single vehicle:
+    | Spec | Value |
+    |------|------:|
+    | Top speed | 380 km/h (per wikipedia.org) |
+    | 0–100 km/h | 2.0 s |
+    | Engine | 8.3L V16 hybrid |
+- Table format example for a comparison:
+    | Metric | Vehicle A | Vehicle B |
+    |--------|----------:|----------:|
+    | Top speed | 380 km/h | 410 km/h |
+    | Range | 540 km | 420 km |
+- After the table, add 1–2 short paragraphs of *context* — origin story, engineering insight, cultural impact — anything that the table doesn't convey.
+- When the answer isn't structured (e.g. open-ended history or "explain how it works"), use short paragraphs and **bold** for key terms instead of a table.
+- Cite sources inline by domain (e.g. "per wikipedia.org") in the table cells when a number is non-obvious.
 - Keep responses under ~250 words unless the user explicitly asks for depth.
 
 FOLLOW-UP SUGGESTIONS

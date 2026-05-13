@@ -86,7 +86,7 @@ export default function MessageBubble({
       className={`flex ${isBot ? "justify-start" : "justify-end"} mb-4 group`}
     >
       <div
-        className={`flex gap-3 max-w-[88%] ${isBot ? "flex-row" : "flex-row-reverse"}`}
+        className={`flex gap-3 max-w-[92%] sm:max-w-[88%] xl:max-w-[82%] 2xl:max-w-[78%] ${isBot ? "flex-row" : "flex-row-reverse"}`}
       >
         {isBot && (
           <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center flex-shrink-0 mt-1 shadow shadow-accent/20">
@@ -160,7 +160,7 @@ export default function MessageBubble({
             </div>
           ) : (
             <div
-              className={`px-4 py-3 text-sm font-body break-words ${
+              className={`px-4 py-3 sm:px-5 sm:py-3.5 text-[15px] sm:text-base font-body break-words max-w-full ${
                 isBot
                   ? "bg-surface text-text-primary rounded-2xl rounded-tl-sm border border-border shadow-sm"
                   : "bg-user-bubble text-user-bubble-text rounded-2xl rounded-tr-sm shadow-sm"
@@ -213,10 +213,10 @@ export default function MessageBubble({
           )}
 
           {isBot && !editing && (
-            <div className="flex items-center gap-1 mt-2">
+            <div className="flex items-center gap-0.5 mt-2 -ml-2">
               <button
                 onClick={handleBookmark}
-                className="text-text-secondary hover:text-accent transition-colors p-1"
+                className="inline-flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 text-text-secondary hover:text-accent transition-colors rounded-full hover:bg-surface-2/60 active:bg-surface-2"
                 aria-label="Bookmark this response"
                 title="Bookmark"
               >
@@ -224,7 +224,7 @@ export default function MessageBubble({
               </button>
               <button
                 onClick={handleCopy}
-                className="text-text-secondary hover:text-accent transition-colors p-1"
+                className="inline-flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 text-text-secondary hover:text-accent transition-colors rounded-full hover:bg-surface-2/60 active:bg-surface-2"
                 aria-label="Copy this response"
                 title="Copy"
               >
@@ -234,11 +234,11 @@ export default function MessageBubble({
           )}
 
           {!isBot && !editing && onEdit && (
-            <div className="flex items-center gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-0.5 mt-1.5 -mr-2 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100 transition-opacity">
               <button
                 onClick={startEdit}
                 disabled={editingDisabled}
-                className="text-text-secondary hover:text-accent transition-colors p-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="inline-flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 text-text-secondary hover:text-accent transition-colors rounded-full hover:bg-surface-2/60 active:bg-surface-2 disabled:opacity-40 disabled:cursor-not-allowed"
                 aria-label="Edit and resend"
                 title="Edit"
               >
@@ -246,7 +246,7 @@ export default function MessageBubble({
               </button>
               <button
                 onClick={handleCopy}
-                className="text-text-secondary hover:text-accent transition-colors p-1"
+                className="inline-flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 text-text-secondary hover:text-accent transition-colors rounded-full hover:bg-surface-2/60 active:bg-surface-2"
                 aria-label="Copy message"
                 title="Copy"
               >

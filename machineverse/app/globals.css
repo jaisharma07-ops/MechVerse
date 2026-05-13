@@ -96,6 +96,58 @@ html.lenis, html.lenis body { height: auto; }
 }
 .mv-prose h3 { font-family: var(--font-display); font-weight: 700; margin: 0.6rem 0 0.3rem; font-size: 1.05rem; }
 
+/* GFM tables in chat bubbles
+   ────────────────────────────
+   The wrapper overflows horizontally on narrow screens so a wide
+   spec table never blows out the bubble. On md+ the table renders
+   inline and the wrapper is just a layout shell. */
+.mv-prose .mv-table-wrap {
+  position: relative;
+  margin: 0.7rem -0.2rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface-2) 65%, transparent);
+}
+.mv-prose .mv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  /* Force a horizontal scroll on narrow viewports rather than crushing cells. */
+  min-width: max-content;
+}
+@media (min-width: 768px) {
+  .mv-prose .mv-table { font-size: 0.92rem; }
+}
+.mv-prose .mv-table thead th {
+  text-align: left;
+  font-weight: 700;
+  font-family: var(--font-display), ui-sans-serif, sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  padding: 0.55rem 0.8rem;
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.mv-prose .mv-table tbody td {
+  padding: 0.5rem 0.8rem;
+  border-top: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--text-primary);
+}
+.mv-prose .mv-table tbody tr:first-child td { border-top: none; }
+.mv-prose .mv-table tbody tr:nth-child(even) td {
+  background: color-mix(in oklab, var(--surface) 35%, transparent);
+}
+.mv-prose .mv-table code {
+  background: color-mix(in oklab, var(--surface) 80%, transparent);
+}
+
 /* =====================================================================
    LANDING — VELOCITY
    ===================================================================== */
