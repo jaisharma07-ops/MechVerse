@@ -4,7 +4,15 @@
       "Bash(git fetch *)",
       "PowerShell(Get-NetTCPConnection *)",
       "PowerShell(npm run *)",
-      "PowerShell(try { $r = Invoke-WebRequest -Uri http://localhost:3000 -UseBasicParsing -TimeoutSec 30; \"Status: $\\($r.StatusCode\\)  Length: $\\($r.RawContentLength\\)\" } catch { \"ERROR: $\\($_.Exception.Message\\)\" })"
+      "PowerShell(try { $r = Invoke-WebRequest -Uri http://localhost:3000 -UseBasicParsing -TimeoutSec 30; \"Status: $\\($r.StatusCode\\)  Length: $\\($r.RawContentLength\\)\" } catch { \"ERROR: $\\($_.Exception.Message\\)\" })",
+      "Bash(npm run *)",
+      "Bash(git -C D:/MechVerse status)",
+      "Bash(git -C D:/MechVerse remote -v)",
+      "Bash(git -C D:/MechVerse branch --show-current)",
+      "Bash(git -C D:/MechVerse log origin/main..HEAD --oneline)",
+      "Bash(git -C D:/MechVerse rev-list --left-right --count origin/main...HEAD)",
+      "Bash(git -C D:/MechVerse diff .claude/settings.local.json)",
+      "Bash(git *)"
     ]
   }
 }
