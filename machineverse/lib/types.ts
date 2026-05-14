@@ -110,6 +110,8 @@ export interface FactsApiResponse {
 export interface SurpriseApiResponse {
   intro: string;
   vehicle: string;
+  /** A question template the client can substitute the vehicle name into. */
+  questionShape?: string;
   error?: string;
 }
 

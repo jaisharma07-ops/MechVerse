@@ -146,11 +146,91 @@ Return ONLY a JSON object, no markdown fences:
 Each fact must be 1-2 sentences, self-contained, and verifiable. Prefer specific names, dates, and numbers over vague claims — but only if you're confident.`;
 }
 
-export function surprisePrompt(category: Category): string {
+/**
+ * Themed angles for the Surprise Me button. Each click rolls one of these
+ * to steer the model toward a different corner of the catalog, so two
+ * consecutive clicks on the same category surface meaningfully different
+ * vehicles rather than the model's go-to favorite.
+ */
+const SURPRISE_THEMES = [
+  {
+    angle: "an obscure prototype or one-off that almost no one has heard of",
+    questionShape:
+      "Why was the {vehicle} built, what made it unusual, and why did it stay obscure?",
+  },
+  {
+    angle: "a record-breaker — fastest, largest, longest, deepest, highest",
+    questionShape: "What record does the {vehicle} hold, and how was it earned?",
+  },
+  {
+    angle: "a beautiful design failure that was commercially or technically a flop",
+    questionShape: "Why did the {vehicle} fail despite its design ambition?",
+  },
+  {
+    angle: "a vehicle from an unexpected country or era (not USA, not Germany, not Japan)",
+    questionShape:
+      "What was the engineering and cultural context that produced the {vehicle}?",
+  },
+  {
+    angle: "something from a niche category: airships, hovercraft, monorails, amphibious craft, ekranoplans, gyrocopters",
+    questionShape:
+      "How does the {vehicle} actually work, and what is it used for today?",
+  },
+  {
+    angle: "a vehicle famous for one weird engineering choice — wankel engine, three wheels, ducted fan, no doors, etc.",
+    questionShape:
+      "What's the unusual engineering choice in the {vehicle}, and did it pay off?",
+  },
+  {
+    angle: "a military or experimental craft that shaped civilian transport later",
+    questionShape:
+      "What did the {vehicle} pioneer that we still benefit from today?",
+  },
+  {
+    angle: "a vehicle from the past 5 years — modern but under-the-radar",
+    questionShape: "What makes the {vehicle} a quietly significant recent arrival?",
+  },
+  {
+    angle: "a working-class workhorse that's hidden in plain sight (delivery vans, ferries, freight locomotives, trawlers)",
+    questionShape:
+      "What's the unsung engineering behind the {vehicle} and why does it matter?",
+  },
+  {
+    angle: "a cult-favorite or enthusiast-only vehicle outside the mainstream",
+    questionShape:
+      "Why does the {vehicle} have a passionate following despite never going mainstream?",
+  },
+] as const;
+
+export interface SurpriseTheme {
+  angle: string;
+  questionShape: string;
+}
+
+/** Pick a random theme. Exported so the route can return the matching `questionShape` to the client. */
+export function pickSurpriseTheme(seed?: number): SurpriseTheme {
+  const r =
+    typeof seed === "number"
+      ? seed % SURPRISE_THEMES.length
+      : Math.floor(Math.random() * SURPRISE_THEMES.length);
+  return SURPRISE_THEMES[r];
+}
+
+export function surprisePrompt(
+  category: Category,
+  theme?: SurpriseTheme,
+): string {
   const label = CATEGORY_LABELS[category]?.label ?? "All Vehicles";
-  return `Pick a single fascinating, lesser-known vehicle from the world of ${label.toLowerCase()}${
-    category === "all" ? "" : ""
-  } and introduce it in a way that makes the user want to learn more.
+  const t = theme ?? pickSurpriseTheme();
+  // Salt the prompt with the theme + a fresh nonce so identical clicks
+  // don't deterministically hit the gateway cache and so the model is
+  // steered toward different territory each time.
+  const nonce = Math.random().toString(36).slice(2, 10);
+  return `Pick a single fascinating, lesser-known vehicle from the world of ${label.toLowerCase()}.
+
+ANGLE: ${t.angle}
+
+Pick something the user is UNLIKELY to have heard of before — not the iconic flagships (Concorde, Ferrari F40, SR-71, Titanic, Veyron, etc. — explicitly avoid those). Aim for the second or third tier of legendary, not the first.
 
 ${accuracyDirective}
 
@@ -158,7 +238,9 @@ Return ONLY a JSON object, no markdown fences:
 {
   "vehicle": "<the vehicle's exact canonical name>",
   "intro": "<a 2-3 sentence engaging hook starting with: Did you know about the <vehicle name>?>"
-}`;
+}
+
+(internal seed: ${nonce} — this is just here to keep the prompt unique per click, ignore it in your answer)`;
 }
 
 export function suggestVehiclesPrompt(query: string, category: Category): string {

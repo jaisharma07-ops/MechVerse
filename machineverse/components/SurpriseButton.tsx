@@ -15,13 +15,28 @@ export default function SurpriseButton({
   const activeCategory = useStore((s) => s.activeCategory);
   const [loading, setLoading] = useState(false);
 
+  // Local fallback shapes used if the API doesn't return a questionShape
+  // (e.g. older deployment). Round-robins through these client-side too.
+  const fallbackShapes = [
+    "Tell me everything fascinating about the {vehicle}.",
+    "What makes the {vehicle} stand out in transport history?",
+    "Walk me through the design and engineering of the {vehicle}.",
+    "What's the story behind the {vehicle} — and why isn't it more famous?",
+    "Compare the {vehicle} to its closest contemporary rival.",
+  ];
+
   const handleClick = async () => {
     if (loading) return;
     setLoading(true);
     try {
       const res = await fetch("/api/surprise", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          // Defeat any intermediate HTTP cache (browser, CDN) — the server
+          // already varies its prompt per request, but belt + suspenders.
+          "Cache-Control": "no-cache",
+        },
         body: JSON.stringify({ category: activeCategory }),
       });
       const data = (await res.json()) as SurpriseApiResponse;
@@ -29,7 +44,11 @@ export default function SurpriseButton({
         toast("Couldn't pick a surprise — try again", "error");
         return;
       }
-      onAsk(`Tell me everything fascinating about the ${data.vehicle}.`);
+      const shape =
+        data.questionShape ??
+        fallbackShapes[Math.floor(Math.random() * fallbackShapes.length)];
+      const question = shape.replace(/\{vehicle\}/g, data.vehicle);
+      onAsk(question);
     } catch {
       toast("Network error", "error");
     } finally {
