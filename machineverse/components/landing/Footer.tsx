@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { ComponentType, SVGProps } from "react";
 
 type IconCmp = ComponentType<SVGProps<SVGSVGElement>>;
@@ -22,9 +23,28 @@ const Linkedin: IconCmp = (props) => (
   </svg>
 );
 
-const COL_PRODUCT = ["Chat", "Compare", "Timeline", "Bookmarks"];
-const COL_RESOURCES = ["Docs", "API", "Changelog", "Status"];
-const COL_COMPANY = ["About", "Press", "Privacy", "Terms"];
+type FooterLink = { label: string; href: string; external?: boolean };
+
+const COL_PRODUCT: FooterLink[] = [
+  { label: "Chat", href: "/chat" },
+  { label: "Compare", href: "/chat" },
+  { label: "Timeline", href: "/chat" },
+  { label: "Bookmarks", href: "/chat" },
+];
+
+const COL_RESOURCES: FooterLink[] = [
+  { label: "Docs", href: "/about" },
+  { label: "API", href: "/contact" },
+  { label: "Changelog", href: "/about" },
+  { label: "Status", href: "/about" },
+];
+
+const COL_COMPANY: FooterLink[] = [
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
+];
 
 export default function Footer() {
   return (
@@ -32,10 +52,14 @@ export default function Footer() {
       <div className="max-w-[1400px] mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-16">
           <div className="col-span-2 md:col-span-1">
-            <div className="font-display uppercase font-semibold tracking-[0.04em] text-2xl text-[var(--text-primary)]">
+            <Link
+              href="/"
+              className="inline-block font-display uppercase font-semibold tracking-[0.04em] text-2xl text-[var(--text-primary)]"
+              style={{ fontFamily: "var(--font-barlow), sans-serif" }}
+            >
               Machine
               <span className="text-[var(--accent)]">Verse</span>
-            </div>
+            </Link>
             <p className="mt-3 text-sm text-[var(--text-secondary)] max-w-[280px]">
               Every machine. Engineered to be understood.
             </p>
@@ -50,9 +74,21 @@ export default function Footer() {
             © {new Date().getFullYear()} MachineVerse · Built for the curious
           </p>
           <div className="flex items-center gap-3 text-[var(--text-secondary)]">
-            <Social Icon={Github} label="GitHub" />
-            <Social Icon={Twitter} label="Twitter" />
-            <Social Icon={Linkedin} label="LinkedIn" />
+            <Social
+              Icon={Github}
+              label="GitHub"
+              href="https://github.com/Jaicoder-1"
+            />
+            <Social
+              Icon={Twitter}
+              label="Twitter / X"
+              href="https://x.com/"
+            />
+            <Social
+              Icon={Linkedin}
+              label="LinkedIn"
+              href="https://www.linkedin.com/in/jai-sharma-aa43b9373/"
+            />
           </div>
         </div>
       </div>
@@ -60,7 +96,7 @@ export default function Footer() {
   );
 }
 
-function Col({ title, items }: { title: string; items: string[] }) {
+function Col({ title, items }: { title: string; items: FooterLink[] }) {
   return (
     <div>
       <div className="font-mono text-[11px] tracking-[0.3em] uppercase text-[var(--text-secondary)]">
@@ -68,13 +104,24 @@ function Col({ title, items }: { title: string; items: string[] }) {
       </div>
       <ul className="mt-4 space-y-2.5">
         {items.map((it) => (
-          <li key={it}>
-            <a
-              href="#"
-              className="text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors text-sm"
-            >
-              {it}
-            </a>
+          <li key={it.label}>
+            {it.external ? (
+              <a
+                href={it.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors text-sm"
+              >
+                {it.label}
+              </a>
+            ) : (
+              <Link
+                href={it.href}
+                className="text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors text-sm"
+              >
+                {it.label}
+              </Link>
+            )}
           </li>
         ))}
       </ul>
@@ -85,13 +132,17 @@ function Col({ title, items }: { title: string; items: string[] }) {
 function Social({
   Icon,
   label,
+  href,
 }: {
   Icon: React.ComponentType<{ className?: string }>;
   label: string;
+  href: string;
 }) {
   return (
     <a
-      href="#"
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
       aria-label={label}
       className="inline-flex items-center justify-center size-9 rounded-full border border-white/10 hover:border-[var(--accent)]/60 hover:text-[var(--accent)] transition-colors"
     >
