@@ -16,7 +16,8 @@
       "Read(//c/Users/angar/AppData/Local/Temp/claude/D--MechVerse/f6ba200c-7289-42bc-b696-49935367e00a/tasks/**)",
       "Bash(cat .gitignore)",
       "Bash(cat machineverse/.gitignore)",
-      "Bash(git ls-files *)"
+      "Bash(git ls-files *)",
+      "Bash(taskkill *)"
     ]
   }
 }
