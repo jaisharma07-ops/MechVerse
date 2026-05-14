@@ -250,6 +250,12 @@ export async function generate(
         const latency = Date.now() - started;
         logLine("FAIL", provider.id, `${err.code} ${latency}ms`);
 
+        // Client hung up — don't try fallbacks, that defeats the purpose
+        // of aborting. Re-throw immediately so the route handler exits.
+        if (err.code === "ABORTED") {
+          throw err;
+        }
+
         // Non-retryable on this provider: skip remaining attempts, move to next.
         if (
           err.code === "NO_API_KEY" ||

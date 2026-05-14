@@ -8,6 +8,22 @@ import {
   type Source,
 } from "../types";
 
+/** Resolves when the signal aborts. Used to race against in-flight Gemini calls. */
+function abortPromise(signal?: AbortSignal): Promise<never> {
+  return new Promise((_, reject) => {
+    if (!signal) return; // never resolves → never wins the race
+    if (signal.aborted) {
+      reject(new GeminiError({ code: "ABORTED", provider: "gemini", userMessage: "Request aborted." }));
+      return;
+    }
+    signal.addEventListener(
+      "abort",
+      () => reject(new GeminiError({ code: "ABORTED", provider: "gemini", userMessage: "Request aborted." })),
+      { once: true },
+    );
+  });
+}
+
 /**
  * Native Gemini call path. Kept on @google/genai (instead of going through
  * OpenAI-compat) for one reason: web grounding. Gemini's googleSearch tool
@@ -194,6 +210,7 @@ export async function callGemini(
         },
       }),
       timeoutPromise,
+      abortPromise(opts.signal),
     ]);
   } catch (e) {
     if (e instanceof GeminiError) throw e;
@@ -230,4 +247,107 @@ export async function callGemini(
   }
 
   return { text, sources };
+}
+
+/**
+ * Streaming Gemini call. Yields delta-text chunks; the final yielded object
+ * carries the accumulated `sources` array (parsed from groundingMetadata on
+ * the terminal chunk).
+ *
+ * Honors opts.signal: when the signal aborts we break out of the iterator
+ * immediately. The underlying fetch eventually GC's; the user-perceived
+ * "stop" is instant.
+ */
+export type GeminiStreamEvent =
+  | { kind: "delta"; text: string }
+  | { kind: "done"; sources: Source[] };
+
+export async function* callGeminiStream(
+  opts: GenerateOptions,
+  model: string,
+): AsyncGenerator<GeminiStreamEvent, void, void> {
+  const key = nextGeminiKey();
+  if (!key) {
+    throw new GeminiError({
+      code: "ALL_KEYS_COOLING",
+      provider: "gemini",
+      userMessage: "All Gemini keys are cooling down.",
+    });
+  }
+
+  const ai = new GoogleGenAI({ apiKey: key });
+  const contents = buildContents(opts);
+  if (contents.length === 0) {
+    throw new GeminiError({
+      code: "NO_INPUT",
+      provider: "gemini",
+      userMessage: "Empty prompt — nothing to send to the model.",
+    });
+  }
+
+  const tools =
+    opts.useWebSearch && !opts.responseMimeType
+      ? [{ googleSearch: {} }]
+      : undefined;
+  const temperature =
+    opts.temperature ?? (opts.responseMimeType === "application/json" ? 0.2 : 0.7);
+
+  let stream;
+  try {
+    stream = await ai.models.generateContentStream({
+      model,
+      contents,
+      config: {
+        systemInstruction: opts.systemInstruction,
+        tools,
+        responseMimeType: opts.responseMimeType,
+        temperature,
+      },
+    });
+  } catch (e) {
+    const friendly = toFriendly(parseRawError(e));
+    if (friendly.code === "RATE_LIMIT") coolDownKey(key);
+    throw friendly;
+  }
+
+  const sources: Source[] = [];
+  const seen = new Set<string>();
+
+  try {
+    for await (const chunk of stream) {
+      if (opts.signal?.aborted) {
+        throw new GeminiError({
+          code: "ABORTED",
+          provider: "gemini",
+          userMessage: "Request aborted.",
+        });
+      }
+      const delta = chunk.text ?? "";
+      if (delta) yield { kind: "delta", text: delta };
+
+      const groundingChunks =
+        chunk.candidates?.[0]?.groundingMetadata?.groundingChunks ?? [];
+      for (const gc of groundingChunks) {
+        const uri = gc.web?.uri;
+        const title = gc.web?.title;
+        if (!uri) continue;
+        try {
+          const u = new URL(uri);
+          const host = u.hostname;
+          if (seen.has(host)) continue;
+          seen.add(host);
+          sources.push({ url: uri, domain: host.replace(/^www\./, ""), title });
+        } catch {
+          // skip
+        }
+      }
+    }
+  } catch (e) {
+    if (e instanceof GeminiError) throw e;
+    const friendly = toFriendly(parseRawError(e));
+    if (friendly.code === "RATE_LIMIT") coolDownKey(key);
+    throw friendly;
+  }
+
+  yield { kind: "done", sources };
 }

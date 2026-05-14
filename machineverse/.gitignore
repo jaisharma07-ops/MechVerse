@@ -40,6 +40,9 @@ yarn-error.log*
 # dev-only log file
 /dev.log
 
+# local chat-history fallback store (only used when Upstash isn't configured)
+/.data/
+
 # vercel
 .vercel
 

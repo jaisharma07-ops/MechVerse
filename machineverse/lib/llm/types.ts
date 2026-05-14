@@ -28,6 +28,13 @@ export interface GenerateOptions {
    * Defaults to inferring from the request shape if unset.
    */
   task?: "chat-grounded" | "json" | "long-context" | "default";
+  /**
+   * Aborts the request when triggered. Propagated to each provider's HTTP
+   * client where supported (OpenAI SDK does, @google/genai we race against).
+   * Used by /api/chat/stream so the client closing the connection actually
+   * stops token generation upstream instead of burning tokens we throw away.
+   */
+  signal?: AbortSignal;
 }
 
 export interface GenerateResult {

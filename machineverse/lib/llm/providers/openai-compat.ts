@@ -110,15 +110,22 @@ export async function callOpenAICompat(
     opts.temperature ?? (opts.responseMimeType === "application/json" ? 0.2 : 0.7);
 
   try {
-    const completion = await client.chat.completions.create({
-      model,
-      messages,
-      temperature,
-      response_format:
-        opts.responseMimeType === "application/json"
-          ? { type: "json_object" }
-          : undefined,
-    });
+    const completion = await client.chat.completions.create(
+      {
+        model,
+        messages,
+        temperature,
+        response_format:
+          opts.responseMimeType === "application/json"
+            ? { type: "json_object" }
+            : undefined,
+      },
+      // Threads the gateway-provided AbortSignal into the OpenAI SDK fetch.
+      // When the client hangs up, OpenAI/Groq/etc. see the connection close
+      // and stop generating — which is exactly the token-saving behavior we
+      // promise on /api/chat/stream.
+      opts.signal ? { signal: opts.signal } : undefined,
+    );
 
     const text = completion.choices?.[0]?.message?.content ?? "";
     return { text: typeof text === "string" ? text : "", sources: [] };
@@ -129,6 +136,19 @@ export async function callOpenAICompat(
 
 function normalizeError(provider: OpenAICompatId, e: unknown): GeminiError {
   const message = e instanceof Error ? e.message : String(e);
+
+  // AbortError from fetch/OpenAI SDK when the client hung up. Flag it
+  // explicitly so the gateway breaks out instead of trying fallbacks
+  // (the user just asked us to stop — we should respect that).
+  const name = e instanceof Error ? e.name : "";
+  if (name === "AbortError" || (e as { code?: string })?.code === "ERR_CANCELED") {
+    return new GeminiError({
+      code: "ABORTED",
+      provider,
+      userMessage: "Request aborted.",
+    });
+  }
+
   // OpenAI SDK errors carry a status code.
   const status =
     typeof e === "object" && e !== null && "status" in e

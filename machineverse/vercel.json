@@ -6,10 +6,14 @@
   "regions": ["iad1"],
   "functions": {
     "app/api/chat/route.ts": { "maxDuration": 60 },
+    "app/api/chat/stream/route.ts": { "maxDuration": 60 },
     "app/api/compare/route.ts": { "maxDuration": 60 },
     "app/api/facts/route.ts": { "maxDuration": 60 },
     "app/api/surprise/route.ts": { "maxDuration": 60 },
     "app/api/timeline/route.ts": { "maxDuration": 60 },
-    "app/api/llm/stats/route.ts": { "maxDuration": 10 }
+    "app/api/llm/stats/route.ts": { "maxDuration": 10 },
+    "app/api/chats/route.ts": { "maxDuration": 10 },
+    "app/api/chats/[id]/route.ts": { "maxDuration": 10 },
+    "app/api/auth/[...nextauth]/route.ts": { "maxDuration": 10 }
   }
 }

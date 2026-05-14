@@ -126,6 +126,21 @@ export const CATEGORY_LABELS: Record<Category, { label: string; emoji: string }>
   experimental: { label: "Experimental", emoji: "🚀" },
 };
 
+// ─── Chat-history wire types (consumed by future UI) ───────────────────
+// Re-exported here so client code can `import { ChatThreadSummary } from
+// "@/lib/types"` without reaching into the storage module's internals.
+export type { ChatThreadSummary, ChatThread } from "@/lib/storage/chats";
+
+/** Wire event from POST /api/chat/stream (NDJSON, one per line). */
+export type ChatStreamEvent =
+  | { type: "chunk"; delta: string }
+  | { type: "sources"; sources: Source[] }
+  | { type: "media"; media: string[] }
+  | { type: "suggestions"; suggestions: string[] }
+  | { type: "final"; answer: string }
+  | { type: "done"; threadId: string | null }
+  | { type: "error"; message: string };
+
 export const CATEGORY_LIST: Category[] = [
   "all",
   "cars",

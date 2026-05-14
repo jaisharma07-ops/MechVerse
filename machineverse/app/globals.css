@@ -47,6 +47,11 @@ html, body {
 }
 
 body {
+  /* `position: relative` makes <body> a positioned offsetParent so that
+     Framer Motion's useScroll can correctly compute target offsets
+     without firing its "non-static position" warning. Has no visual
+     effect on its own (relative with no top/left is identical to static). */
+  position: relative;
   background: var(--bg);
   color: var(--text-primary);
   font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
@@ -146,6 +151,60 @@ html.lenis, html.lenis body { height: auto; }
 }
 .mv-prose .mv-table code {
   background: color-mix(in oklab, var(--surface) 80%, transparent);
+}
+
+/* =====================================================================
+   FOUNDRY — drafting-pen morphing machine
+   =====================================================================
+   The hero element on app/page.tsx. Every <path>, <line>, <circle>, etc.
+   inside .mv-foundry runs a single four-beat animation per mount:
+
+      DRAFT (0–45%)  strokes draw in    via dashoffset 1 → 0   (white)
+      FLASH (45–55%) color shifts                            (white → amber)
+      HOLD  (55–70%) silhouette steady                       (amber)
+      ERASE (70–100%) strokes retract   via dashoffset 0 → 1   (amber)
+
+   React unmounts the wrapper between cycles (key bump), so the animation
+   restarts cleanly on every new silhouette without needing JS to drive
+   the stroke values. */
+
+.mv-foundry {
+  color: rgba(255, 255, 255, 0.95);
+}
+.mv-foundry svg {
+  filter: drop-shadow(0 0 14px rgba(245, 166, 35, 0.08));
+}
+.mv-foundry svg path,
+.mv-foundry svg line,
+.mv-foundry svg circle,
+.mv-foundry svg ellipse,
+.mv-foundry svg rect,
+.mv-foundry svg polyline,
+.mv-foundry svg polygon {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: mv-foundry-stroke 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  vector-effect: non-scaling-stroke;
+}
+@keyframes mv-foundry-stroke {
+  0%   { stroke-dashoffset: 1; stroke: rgba(255, 255, 255, 0.95); }
+  45%  { stroke-dashoffset: 0; stroke: rgba(255, 255, 255, 0.95); }
+  55%  { stroke: rgba(245, 166, 35, 1); }
+  70%  { stroke-dashoffset: 0; stroke: rgba(245, 166, 35, 1); }
+  100% { stroke-dashoffset: 1; stroke: rgba(245, 166, 35, 1); }
+}
+
+/* Reduced-motion path: silhouette renders fully formed in amber, no cycle. */
+.mv-foundry--reduced svg path,
+.mv-foundry--reduced svg line,
+.mv-foundry--reduced svg circle,
+.mv-foundry--reduced svg ellipse,
+.mv-foundry--reduced svg rect,
+.mv-foundry--reduced svg polyline,
+.mv-foundry--reduced svg polygon {
+  stroke-dashoffset: 0;
+  stroke: rgba(245, 166, 35, 0.85);
+  animation: none;
 }
 
 /* =====================================================================
