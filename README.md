@@ -6,7 +6,7 @@
 > **Where Mechanical Engineering Meets Digital Innovation.** 
 > Mech-Verse is an immersive, high-fidelity web platform built to showcase the convergence of high-performance physical systems, advanced engineering concepts, and modern full-stack web architecture.
 
-Featuring a sleek, premium, dark-matte aesthetic with cinematic UI transitions, Mech-Verse redefines how technical portfolios and engineering assets are experienced on the web.
+Featuring a sleek, premium, dark-matte aesthetic with cinematic UI transitions, Mech-Verse redefines how technical portfolios and engineering assets are experienced on the web.     
 
 ---
 
