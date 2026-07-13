@@ -9,6 +9,7 @@
 
 **MachineVerse** is an AI-powered, web-based knowledge platform dedicated entirely to machines and modes of transport. It serves as the world's most comprehensive, conversational, and visually rich encyclopedia for vehicles — from ancient sail ships to hypersonic aircraft. Any person — enthusiast, student, researcher, or curious mind — can arrive at MachineVerse and explore the entire world of transport through a guided, intelligent chatbot experience backed by real-time web intelligence.
 
+
 ---
 
 ## 2. Problem Statement
@@ -273,7 +274,6 @@ Requirements:
 - All animations use CSS transitions or Framer Motion
 - The entire screen should feel cinematic and confident, not playful or cartoony
 ```
-
 ---
 
 ### Prompt 3 — Vehicle Category Dropdown & Navigation
@@ -295,7 +295,6 @@ Right side:
 
 Make the nav sticky, with a subtle backdrop blur on scroll.
 ```
-
 ---
 
 ### Prompt 4 — Core Chat Interface
@@ -394,7 +393,6 @@ When opened (as a full-page panel or modal):
 
 ```
 Add two discovery features to MachineVerse:
-
 Feature 1: Facts Ticker
 - A horizontally scrolling ticker bar just below the navigation
 - On load: call the Gemini API with "Give me 8 surprising, fascinating facts about [activeCategory] vehicles. Return as a JSON array of strings."
@@ -508,7 +506,7 @@ machineverse/
 └── public/
     └── icons/              # Vehicle category SVG icons
 ```
-
+project about machines 
 ---
 
 *End of PRD — MachineVerse v1.0*
