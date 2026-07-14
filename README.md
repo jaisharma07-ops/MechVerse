@@ -12,6 +12,8 @@ Featuring a sleek, premium, dark-matte aesthetic with cinematic UI transitions, 
 
 ##  Core Features
 
+
+
 *   **Premium Visual Framework:** Designed with a hyper-modern, low-friction dark UI, featuring subtle neon accents and carbon-fiber-inspired asset layout.
 *   **Engineering Showcase:** An interactive hub engineered to house high-performance vehicle dynamics, CAD architectures, and structural analysis modules.
 *   **Responsive Performance:** Fully optimized for seamless client-side performance, instant page transitions, and fluid responsiveness across all devices.
