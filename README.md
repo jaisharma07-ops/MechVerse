@@ -32,6 +32,8 @@ Featuring a sleek, premium, dark-matte aesthetic with cinematic UI transitions, 
 
 .js installed on your machine (v18.x or higher recommended).
 ```bash
+
+
 node -v
 
 
